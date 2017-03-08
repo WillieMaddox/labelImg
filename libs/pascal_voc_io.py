@@ -5,6 +5,7 @@ import sys
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement
 from lxml import etree
+from PyQt4.QtGui import *
 
 
 class PascalVocWriter:
@@ -114,16 +115,24 @@ class PascalVocReader:
         self.filepath = filepath
         self.parseXML()
 
-    def getShapes(self):
-        return self.shapes
-
-    def addShape(self, label, bndbox):
+    def getPoints(self, bndbox):
         xmin = int(bndbox.find('xmin').text)
         ymin = int(bndbox.find('ymin').text)
         xmax = int(bndbox.find('xmax').text)
         ymax = int(bndbox.find('ymax').text)
-        points = [(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)]
-        self.shapes.append((label, points, None, None))
+        return [(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)]
+
+    def getLineColor(self, score):
+        r = int(255*(1-score))
+        g = int(255*score)
+        b = 0
+        return [r, g, b]
+
+    def getShapes(self):
+        return self.shapes
+
+    def addShape(self, label, points, line_color):
+        self.shapes.append((label, points, line_color, None))
 
     def parseXML(self):
         assert self.filepath.endswith('.xml'), "Unsupport file format"
@@ -132,9 +141,15 @@ class PascalVocReader:
         filename = xmltree.find('filename').text
 
         for object_iter in xmltree.findall('object'):
-            bndbox = object_iter.find("bndbox")
             label = object_iter.find('name').text
-            self.addShape(label, bndbox)
+            score = object_iter.find('score')
+            bndbox = object_iter.find("bndbox")
+            points = self.getPoints(bndbox)
+            if score is not None:
+                line_color = self.getLineColor(float(score.text))
+            else:
+                line_color = None
+            self.addShape(label, points, line_color)
         return True
 
 

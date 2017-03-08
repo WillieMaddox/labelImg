@@ -157,8 +157,9 @@ class Shape(object):
         self._highlightIndex = None
 
     def copy(self):
-        shape = Shape("Copy of %s" % self.label )
-        shape.points= [p for p in self.points]
+        # shape = Shape("Copy of %s" % self.label)
+        shape = Shape(self.label)
+        shape.points = [p for p in self.points]
         shape.fill = self.fill
         shape.selected = self.selected
         shape._closed = self._closed
