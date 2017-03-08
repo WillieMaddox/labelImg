@@ -32,8 +32,7 @@ class LabelFile(object):
         image = QImage()
         image.load(imagePath)
         imageShape = [image.height(), image.width(), 1 if image.isGrayscale() else 3]
-        writer = PascalVocWriter(imgFolderName, imgFileNameWithoutExt,\
-                                 imageShape, localImgPath=imagePath)
+        writer = PascalVocWriter(imgFolderName, imgFileNameWithoutExt, imageShape, localImgPath=imagePath)
         bSave = False
         for shape in shapes:
             points = shape['points']
@@ -43,7 +42,7 @@ class LabelFile(object):
             bSave = True
 
         if bSave:
-            writer.save(targetFile = filename)
+            writer.save(targetFile=filename)
         return
 
     @staticmethod
